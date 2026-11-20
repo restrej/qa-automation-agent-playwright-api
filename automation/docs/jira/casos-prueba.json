@@ -1,0 +1,443 @@
+[
+  {
+    "key": "TC-001",
+    "issueType": "Test",
+    "priority": "Highest",
+    "testType": "Manual",
+    "labels": [
+      "registro",
+      "smoke",
+      "automatizado"
+    ],
+    "precondition": "El usuario no está autenticado y navega en https://demowebshop.tricentis.com",
+    "automation": "UI",
+    "summary": "Registro exitoso de un usuario nuevo con datos válidos",
+    "component": "Registro",
+    "feature": "features/ui/registro.feature",
+    "description": "Validar que un visitante puede crear una cuenta diligenciando: First name, Last name, Email, Password, Confirm password.",
+    "steps": [
+      {
+        "action": "Ingresar a la página de inicio y dar clic en \"Register\"",
+        "data": "https://demowebshop.tricentis.com",
+        "expected": "Se muestra el formulario de registro"
+      },
+      {
+        "action": "Seleccionar género y diligenciar nombre, apellido, correo único y contraseña",
+        "data": "Jose Elver / Arturo / correo único / Qa#123456",
+        "expected": "Los campos aceptan los datos"
+      },
+      {
+        "action": "Confirmar la contraseña y dar clic en \"Register\"",
+        "data": "",
+        "expected": "Se muestra el mensaje \"Your registration completed\""
+      },
+      {
+        "action": "Verificar la cabecera",
+        "data": "",
+        "expected": "Se ve el correo del usuario y el enlace \"Log out\""
+      }
+    ]
+  },
+  {
+    "key": "TC-002",
+    "issueType": "Test",
+    "priority": "High",
+    "testType": "Manual",
+    "labels": [
+      "registro",
+      "negativo",
+      "automatizado"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Registro fallido con campos obligatorios vacíos",
+    "component": "Registro",
+    "feature": "features/ui/registro.feature",
+    "description": "Validar los mensajes de obligatoriedad. Campos obligatorios detectados: First name, Last name, Email, Password, Confirm password.",
+    "steps": [
+      {
+        "action": "Ingresar a la página de registro",
+        "data": "https://demowebshop.tricentis.com/register/",
+        "expected": "Se muestra el formulario"
+      },
+      {
+        "action": "Dar clic en \"Register\" sin diligenciar datos",
+        "data": "",
+        "expected": "Se muestran mensajes \"... is required.\" en cada campo obligatorio"
+      }
+    ]
+  },
+  {
+    "key": "TC-003",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "registro",
+      "negativo"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Registro fallido con correo electrónico de formato inválido",
+    "component": "Registro",
+    "steps": [
+      {
+        "action": "Diligenciar el formulario con un correo sin formato válido",
+        "data": "correo: usuario@@dominio",
+        "expected": ""
+      },
+      {
+        "action": "Dar clic en \"Register\"",
+        "data": "",
+        "expected": "Se muestra el mensaje \"Wrong email\" y no se crea la cuenta"
+      }
+    ]
+  },
+  {
+    "key": "TC-004",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "registro",
+      "negativo"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Registro fallido cuando la confirmación de contraseña no coincide",
+    "component": "Registro",
+    "steps": [
+      {
+        "action": "Diligenciar el formulario con contraseñas diferentes",
+        "data": "Password: Qa#123456 / Confirm: Qa#654321",
+        "expected": ""
+      },
+      {
+        "action": "Dar clic en \"Register\"",
+        "data": "",
+        "expected": "Se muestra el mensaje de que las contraseñas no coinciden"
+      }
+    ]
+  },
+  {
+    "key": "TC-005",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "registro",
+      "negativo"
+    ],
+    "precondition": "Existe un usuario registrado con el correo a utilizar",
+    "automation": "UI",
+    "summary": "Registro fallido con un correo ya registrado",
+    "component": "Registro",
+    "steps": [
+      {
+        "action": "Diligenciar el formulario con un correo existente",
+        "data": "correo existente",
+        "expected": ""
+      },
+      {
+        "action": "Dar clic en \"Register\"",
+        "data": "",
+        "expected": "Se muestra \"The specified email already exists\""
+      }
+    ]
+  },
+  {
+    "key": "TC-006",
+    "issueType": "Test",
+    "priority": "Highest",
+    "testType": "Manual",
+    "labels": [
+      "compra",
+      "e2e",
+      "smoke",
+      "automatizado"
+    ],
+    "precondition": "Usuario recién registrado y autenticado con el carrito vacío",
+    "automation": "UI",
+    "summary": "Compra exitosa de \"14.1-inch Laptop\" pagando con tarjeta de crédito Visa",
+    "component": "Checkout",
+    "feature": "features/ui/compra.feature",
+    "description": "Flujo E2E: registro > categoría > subcategoría > producto > carrito > checkout > pago con tarjeta > confirmación. Validaciones: registro exitoso y mensaje final de compra.",
+    "steps": [
+      {
+        "action": "Registrar un usuario nuevo",
+        "data": "correo único",
+        "expected": "Se muestra \"Your registration completed\""
+      },
+      {
+        "action": "Ir a la categoría \"Computers\" > \"Notebooks\"",
+        "data": "",
+        "expected": "Se listan los productos"
+      },
+      {
+        "action": "Agregar el producto \"14.1-inch Laptop\" al carrito",
+        "data": "Cantidad: 1",
+        "expected": "Se muestra \"The product has been added to your shopping cart\""
+      },
+      {
+        "action": "Ingresar al carrito, aceptar términos y dar clic en \"Checkout\"",
+        "data": "",
+        "expected": "Se abre el checkout en el paso \"Billing address\""
+      },
+      {
+        "action": "Diligenciar la dirección de facturación (nombre, apellido y correo quedan por defecto)",
+        "data": "Company: Empresa Demo QA  | Country: Colombia | State: Other (Non US) | City: Medellín | Address 1: calle 14 # 6-51 | Address 2: Carrera 17 # 3-56 | Zip: 12315 | Phone: 3177777777 | Fax: 15464",
+        "expected": "Se habilita el paso \"Shipping address\""
+      },
+      {
+        "action": "Continuar con la dirección y el método de envío por defecto",
+        "data": "",
+        "expected": "Se habilita \"Payment method\""
+      },
+      {
+        "action": "Seleccionar \"Credit Card\" como método de pago",
+        "data": "",
+        "expected": "Se habilita \"Payment information\""
+      },
+      {
+        "action": "Completar la información de pago",
+        "data": "Select credit card: Visa | Cardholder name: Barbara Gordon | Card number: 4485564059489345 | Expiration date: 04/2039 | Card code: 123",
+        "expected": "Se habilita \"Confirm order\""
+      },
+      {
+        "action": "Dar clic en \"Confirm\"",
+        "data": "",
+        "expected": "Se muestra \"Your order has been successfully processed!\" y un número de orden"
+      }
+    ]
+  },
+  {
+    "key": "TC-007",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "compra",
+      "negativo"
+    ],
+    "precondition": "Usuario autenticado con al menos un producto en el carrito",
+    "automation": "UI",
+    "summary": "Checkout bloqueado si no se aceptan los términos del servicio",
+    "component": "Checkout",
+    "steps": [
+      {
+        "action": "Ingresar al carrito",
+        "data": "",
+        "expected": "Se lista el producto agregado"
+      },
+      {
+        "action": "Dar clic en \"Checkout\" sin marcar \"I agree with the terms of service\"",
+        "data": "",
+        "expected": "Se muestra la alerta de términos y no avanza al checkout"
+      }
+    ]
+  },
+  {
+    "key": "TC-008",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "compra",
+      "negativo"
+    ],
+    "precondition": "Usuario en el paso \"Payment information\"",
+    "automation": "UI",
+    "summary": "Pago rechazado por número de tarjeta inválido",
+    "component": "Checkout",
+    "steps": [
+      {
+        "action": "Diligenciar la tarjeta con un número inválido",
+        "data": "Card number: 1234567890123456",
+        "expected": ""
+      },
+      {
+        "action": "Dar clic en \"Continue\"",
+        "data": "",
+        "expected": "Se muestra \"Wrong card number\" y no avanza a la confirmación"
+      }
+    ]
+  },
+  {
+    "key": "TC-009",
+    "issueType": "Test",
+    "priority": "Low",
+    "testType": "Manual",
+    "labels": [
+      "navegacion",
+      "catalogo"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Navegación por categoría \"Computers\" > subcategoría \"Desktops\"",
+    "component": "Catálogo",
+    "steps": [
+      {
+        "action": "Ingresar a la página de inicio",
+        "data": "https://demowebshop.tricentis.com",
+        "expected": "Se muestra el menú superior de categorías"
+      },
+      {
+        "action": "Posicionarse sobre \"Computers\" y dar clic en \"Desktops\"",
+        "data": "",
+        "expected": "Se muestra el listado de productos de \"Desktops\""
+      }
+    ]
+  },
+  {
+    "key": "TC-010",
+    "issueType": "Test",
+    "priority": "Low",
+    "testType": "Manual",
+    "labels": [
+      "navegacion",
+      "catalogo"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Navegación por categoría \"Books\"",
+    "component": "Catálogo",
+    "steps": [
+      {
+        "action": "Ingresar a la página de inicio",
+        "data": "https://demowebshop.tricentis.com",
+        "expected": "Se muestra el menú superior de categorías"
+      },
+      {
+        "action": "Dar clic en la categoría \"Books\"",
+        "data": "",
+        "expected": "Se muestra el listado de productos de \"Books\""
+      }
+    ]
+  },
+  {
+    "key": "TC-011",
+    "issueType": "Test",
+    "priority": "Low",
+    "testType": "Manual",
+    "labels": [
+      "formulario",
+      "home"
+    ],
+    "precondition": "",
+    "automation": "UI",
+    "summary": "Envío del formulario \"Search\" en Demo Web Shop",
+    "component": "Formularios",
+    "description": "Campos detectados: q",
+    "steps": [
+      {
+        "action": "Ingresar a la página",
+        "data": "https://demowebshop.tricentis.com/",
+        "expected": "Se muestra el formulario"
+      },
+      {
+        "action": "Diligenciar los campos con datos válidos",
+        "data": "q",
+        "expected": ""
+      },
+      {
+        "action": "Dar clic en \"Search\"",
+        "data": "",
+        "expected": "El formulario se procesa sin errores de validación"
+      }
+    ]
+  },
+  {
+    "key": "TC-012",
+    "issueType": "Test",
+    "priority": "Highest",
+    "testType": "Manual",
+    "labels": [
+      "api",
+      "crud",
+      "coffees",
+      "automatizado",
+      "smoke"
+    ],
+    "precondition": "API disponible en https://webservice.toscacloud.com",
+    "automation": "API",
+    "summary": "[API] Ciclo de vida CRUD completo del recurso Coffees",
+    "component": "API Coffees",
+    "feature": "features/api/coffees_crud.feature",
+    "description": "Bloques: 1) Creación 2) Consulta 3) Actualización 4) Eliminación 5) Validación final. Esquema: Coffee (id, name, description).",
+    "steps": [
+      {
+        "action": "BLOQUE 1 - POST /api/v1/Coffees",
+        "data": "{ \"id\": 0, \"name\": \"<único>\", \"description\": \"<único>\" }",
+        "expected": "Status 200, estructura válida según el esquema y se persiste el ID generado"
+      },
+      {
+        "action": "BLOQUE 2 - GET /api/v1/Coffees/{id}",
+        "data": "id generado",
+        "expected": "Status 200, el objeto corresponde al creado y los campos son correctos"
+      },
+      {
+        "action": "BLOQUE 3 - PUT /api/v1/Coffees",
+        "data": "mismo id con nuevos valores",
+        "expected": "Status 200 y los cambios se reflejan (respuesta y nueva consulta)"
+      },
+      {
+        "action": "BLOQUE 4 - DELETE /api/v1/Coffees?id={id}",
+        "data": "id generado",
+        "expected": "Status 200"
+      },
+      {
+        "action": "BLOQUE 5 - GET /api/v1/Coffees/{id}",
+        "data": "id eliminado",
+        "expected": "El recurso no existe (404/204 o respuesta vacía)"
+      }
+    ]
+  },
+  {
+    "key": "TC-013",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "api",
+      "negativo",
+      "coffees",
+      "automatizado"
+    ],
+    "precondition": "",
+    "automation": "API",
+    "summary": "[API] Consultar un Coffee inexistente",
+    "component": "API Coffees",
+    "feature": "features/api/coffees_crud.feature",
+    "steps": [
+      {
+        "action": "GET /api/v1/Coffees/{id}",
+        "data": "id = 2147483000",
+        "expected": "El recurso no existe (404/204 o respuesta vacía)"
+      }
+    ]
+  },
+  {
+    "key": "TC-014",
+    "issueType": "Test",
+    "priority": "Medium",
+    "testType": "Manual",
+    "labels": [
+      "api",
+      "negativo",
+      "contrato",
+      "coffees"
+    ],
+    "precondition": "",
+    "automation": "API",
+    "summary": "[API] Crear Coffee con propiedades no permitidas por el contrato",
+    "component": "API Coffees",
+    "description": "El esquema declara additionalProperties: false.",
+    "steps": [
+      {
+        "action": "POST /api/v1/Coffees",
+        "data": "{ \"id\": 0, \"campoInexistente\": \"x\" }",
+        "expected": "La API rechaza la petición (4xx) o ignora la propiedad sin persistirla"
+      }
+    ]
+  }
+]

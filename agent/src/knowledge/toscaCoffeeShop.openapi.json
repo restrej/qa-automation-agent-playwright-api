@@ -1,0 +1,29 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "Tricentis Demo CoffeeShop V1 (copia local de respaldo)", "version": "v1" },
+  "servers": [{ "url": "https://webservice.toscacloud.com" }],
+  "paths": {
+    "/api/v1/Coffees": {
+      "get": { "tags": ["Coffees"], "operationId": "ListCoffees", "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Coffee" } } } } } } },
+      "post": { "tags": ["Coffees"], "operationId": "AddCoffee", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Coffee" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Coffee" } } } } } },
+      "put": { "tags": ["Coffees"], "operationId": "UpdateCoffee", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Coffee" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Coffee" } } } } } },
+      "delete": { "tags": ["Coffees"], "operationId": "DeleteCoffeeById", "parameters": [{ "name": "id", "in": "query", "schema": { "type": "integer", "format": "int32" } }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/v1/Coffees/{id}": {
+      "get": { "tags": ["Coffees"], "operationId": "GetCoffeeById", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Coffee" } } } } } }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Coffee": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer", "format": "int32" },
+          "name": { "type": "string", "nullable": true },
+          "description": { "type": "string", "nullable": true }
+        }
+      }
+    }
+  }
+}

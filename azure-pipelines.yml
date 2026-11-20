@@ -1,0 +1,180 @@
+# =====================================================================
+#  CI/CD - Automatización Demo Web Shop (UI) + Tosca CoffeeShop (API)
+#  Playwright + TypeScript + Cucumber + Serenity/JS + Allure
+#  Repositorio en GitHub conectado a Azure DevOps (service connection GitHub)
+# =====================================================================
+
+trigger:
+  branches:
+    include: [main, develop]
+  paths:
+    include: [automation/*, azure-pipelines.yml]
+
+pr:
+  branches:
+    include: [main]
+
+schedules:
+  - cron: '0 11 * * 1-5' # 06:00 hora Colombia (UTC-5), lunes a viernes
+    displayName: Regresión diaria
+    branches:
+      include: [main]
+    always: true
+
+parameters:
+  - name: tagFilter
+    displayName: Filtro adicional de tags de Cucumber
+    type: string
+    default: 'not @wip'
+  - name: browsers
+    displayName: Navegadores UI
+    type: object
+    default: [chromium, firefox, webkit]
+
+variables:
+  NODE_VERSION: '20.x'
+  WORKDIR: automation
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  HEADLESS: 'true'
+  BASE_URL: https://demowebshop.tricentis.com
+  API_BASE_URL: https://webservice.toscacloud.com
+
+stages:
+  # ------------------------------------------------------------------
+  - stage: Build
+    displayName: Build y validación estática
+    jobs:
+      - job: Validate
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: NodeTool@0
+            inputs: { versionSpec: $(NODE_VERSION) }
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | automation/package-lock.json'
+              path: $(npm_config_cache)
+          - script: npm ci
+            displayName: Instalar dependencias
+            workingDirectory: $(WORKDIR)
+            env: { PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1' }
+          - script: npm run typecheck
+            displayName: Compilación TypeScript
+            workingDirectory: $(WORKDIR)
+          - script: npx cucumber-js --dry-run --strict
+            displayName: Validar que todos los pasos Gherkin estén implementados
+            workingDirectory: $(WORKDIR)
+
+  # ------------------------------------------------------------------
+  - stage: API
+    displayName: Pruebas API (CRUD Coffees)
+    dependsOn: Build
+    jobs:
+      - job: Api_CRUD
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: NodeTool@0
+            inputs: { versionSpec: $(NODE_VERSION) }
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | automation/package-lock.json'
+              path: $(npm_config_cache)
+          - script: npm ci
+            workingDirectory: $(WORKDIR)
+            env: { PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1' }
+          - script: npx cucumber-js -p ci --tags "@api and (${{ parameters.tagFilter }})"
+            displayName: Ejecutar escenarios @api
+            workingDirectory: $(WORKDIR)
+          - template: pipelines/templates/publish-results.yml
+            parameters: { name: api }
+
+  # ------------------------------------------------------------------
+  - stage: UI
+    displayName: Pruebas UI multi-navegador
+    dependsOn: Build
+    jobs:
+      - ${{ each browser in parameters.browsers }}:
+          - job: UI_${{ browser }}
+            displayName: UI ${{ browser }}
+            pool: { vmImage: ubuntu-latest }
+            timeoutInMinutes: 45
+            variables:
+              BROWSER: ${{ browser }}
+            steps:
+              - task: NodeTool@0
+                inputs: { versionSpec: $(NODE_VERSION) }
+              - task: Cache@2
+                inputs:
+                  key: 'npm | "$(Agent.OS)" | automation/package-lock.json'
+                  path: $(npm_config_cache)
+              - script: npm ci
+                workingDirectory: $(WORKDIR)
+                env: { PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1' }
+              - script: npx playwright install --with-deps ${{ browser }}
+                displayName: Instalar navegador ${{ browser }}
+                workingDirectory: $(WORKDIR)
+              - script: npx cucumber-js -p ci --tags "@ui and (${{ parameters.tagFilter }})"
+                displayName: Ejecutar escenarios @ui en ${{ browser }}
+                workingDirectory: $(WORKDIR)
+              - template: pipelines/templates/publish-results.yml
+                parameters:
+                  name: ui-${{ browser }}
+
+  # ------------------------------------------------------------------
+  - stage: Reports
+    displayName: Reportes Allure + Serenity BDD
+    dependsOn: [API, UI]
+    condition: succeededOrFailed()
+    jobs:
+      - job: Build_Reports
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: NodeTool@0
+            inputs: { versionSpec: $(NODE_VERSION) }
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | automation/package-lock.json'
+              path: $(npm_config_cache)
+          - script: npm ci
+            workingDirectory: $(WORKDIR)
+            env: { PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1' }
+          - task: DownloadPipelineArtifact@2
+            displayName: Descargar resultados de todas las ejecuciones
+            inputs:
+              patterns: 'results-*/**'
+              path: $(Pipeline.Workspace)/results
+          - bash: |
+              set -e
+              mkdir -p allure-results
+              # Allure: se fusionan todos los resultados (cada archivo tiene UUID único)
+              find "$(Pipeline.Workspace)/results" -path '*allure-results/*' -type f -exec cp {} allure-results/ \;
+              # Serenity: un reporte por ejecución (api, ui-chromium, ...)
+              for dir in "$(Pipeline.Workspace)"/results/results-*; do
+                name=$(basename "$dir" | sed 's/^results-//')
+                if [ -d "$dir/serenity" ]; then
+                  mkdir -p "serenity-reports/$name"
+                  cp -r "$dir/serenity/." "serenity-reports/$name/"
+                fi
+              done
+            displayName: Consolidar resultados
+            workingDirectory: $(WORKDIR)
+          - script: npx allure generate allure-results --clean -o allure-report
+            displayName: Generar reporte Allure
+            workingDirectory: $(WORKDIR)
+          - bash: |
+              set -e
+              npx serenity-bdd download
+              for dir in serenity-reports/*; do
+                npx serenity-bdd run --features ./features --source "$dir" --destination "$dir"
+              done
+            displayName: Generar reportes Serenity BDD
+            workingDirectory: $(WORKDIR)
+          - task: PublishPipelineArtifact@1
+            displayName: Publicar reporte Allure
+            inputs:
+              targetPath: $(WORKDIR)/allure-report
+              artifact: allure-report
+          - task: PublishPipelineArtifact@1
+            displayName: Publicar reportes Serenity BDD
+            inputs:
+              targetPath: $(WORKDIR)/serenity-reports
+              artifact: serenity-report

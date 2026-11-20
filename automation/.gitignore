@@ -1,0 +1,9 @@
+node_modules/
+dist/
+allure-results/
+allure-report/
+target/
+reports/
+test-results/
+.env
+cache/

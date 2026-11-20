@@ -1,0 +1,21 @@
+{
+  "name": "qa-automation-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agente local que analiza un sitio web / OpenAPI y genera casos Jira + automatización UI (Playwright/Cucumber/POM) y API REST",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "browsers:install": "playwright install chromium"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "jszip": "^3.10.2",
+    "playwright": "^1.65.1"
+  }
+}

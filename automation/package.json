@@ -1,0 +1,41 @@
+{
+  "name": "demowebshop-coffeeshop-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automatización UI (Playwright + Cucumber + POM + Serenity/JS + Allure) y API REST CRUD (Tosca CoffeeShop)",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "cucumber-js",
+    "test:ui": "cucumber-js --tags @ui",
+    "test:api": "cucumber-js --tags @api",
+    "test:chrome": "cross-env BROWSER=chromium cucumber-js --tags @ui",
+    "test:firefox": "cross-env BROWSER=firefox cucumber-js --tags @ui",
+    "test:webkit": "cross-env BROWSER=webkit cucumber-js --tags @ui",
+    "test:dry": "cucumber-js --dry-run",
+    "browsers:install": "playwright install --with-deps chromium firefox webkit",
+    "report:allure": "allure generate allure-results --clean -o allure-report",
+    "report:allure:open": "allure open allure-report",
+    "report:serenity": "serenity-bdd run --features ./features --source ./target/site/serenity --destination ./target/site/serenity",
+    "serenity:download": "serenity-bdd download",
+    "clean": "rimraf allure-results allure-report target reports"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.3.0",
+    "@playwright/test": "^1.65.1",
+    "@serenity-js/console-reporter": "^3.49.0",
+    "@serenity-js/core": "^3.49.0",
+    "@serenity-js/cucumber": "^3.49.0",
+    "@serenity-js/serenity-bdd": "^3.49.0",
+    "@types/node": "^26.6.6",
+    "ajv": "^8.20.0",
+    "allure-commandline": "^2.46.1",
+    "allure-cucumberjs": "^3.15.0",
+    "allure-js-commons": "^3.15.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^18.0.10",
+    "playwright": "^1.65.1",
+    "rimraf": "^6.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

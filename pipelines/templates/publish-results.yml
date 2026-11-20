@@ -1,0 +1,31 @@
+# Publica JUnit en la pestaña "Tests" de Azure DevOps y guarda Allure/Serenity/trazas como artefacto.
+parameters:
+  - name: name
+    type: string
+
+steps:
+  - task: PublishTestResults@2
+    displayName: Publicar resultados JUnit (${{ parameters.name }})
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: automation/reports/cucumber-junit.xml
+      testRunTitle: Cucumber ${{ parameters.name }}
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+
+  - bash: |
+      mkdir -p "$(Build.ArtifactStagingDirectory)/results"
+      cp -r automation/allure-results "$(Build.ArtifactStagingDirectory)/results/" 2>/dev/null || true
+      cp -r automation/target/site/serenity "$(Build.ArtifactStagingDirectory)/results/serenity" 2>/dev/null || true
+      cp -r automation/reports "$(Build.ArtifactStagingDirectory)/results/" 2>/dev/null || true
+      cp -r automation/test-results "$(Build.ArtifactStagingDirectory)/results/" 2>/dev/null || true
+    displayName: Preparar artefactos
+    condition: succeededOrFailed()
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publicar artefacto results-${{ parameters.name }}
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: $(Build.ArtifactStagingDirectory)/results
+      artifact: results-${{ parameters.name }}

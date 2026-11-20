@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QA Automation Agent</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230052cc%22/%3E%3Ctext x=%2216%22 y=%2221%22 font-size=%2214%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3EQA%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">QA</span>
+      <div>
+        <h1>QA Automation Agent</h1>
+        <p>Analiza un sitio web y una API REST · genera casos Jira y automatización Playwright + Cucumber</p>
+      </div>
+    </div>
+    <span id="llmBadge" class="badge">IA: —</span>
+  </header>
+
+  <main class="layout">
+    <!-- ================= CONFIGURACIÓN ================= -->
+    <section class="column config">
+      <div class="card">
+        <h2><span class="num">1</span> Sitio web bajo prueba</h2>
+        <label>URL
+          <input id="siteUrl" type="url" value="https://demowebshop.tricentis.com/" />
+        </label>
+        <label>Máximo de páginas a recorrer
+          <input id="maxPages" type="number" min="1" max="20" value="6" />
+        </label>
+        <button id="btnSite" class="primary">Analizar sitio</button>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">2</span> API REST (OpenAPI)</h2>
+        <label>URL del OpenAPI / Swagger
+          <input id="specUrl" type="url" value="https://webservice.toscacloud.com/api/docs/v1/" />
+        </label>
+        <label>URL base de la API (opcional)
+          <input id="apiBaseUrl" type="url" value="https://webservice.toscacloud.com" />
+        </label>
+        <details>
+          <summary>Pegar el JSON del OpenAPI manualmente</summary>
+          <textarea id="specText" rows="6" placeholder='{"openapi":"3.0.1","paths":{...}}'></textarea>
+        </details>
+        <button id="btnApi" class="primary">Analizar API</button>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">3</span> Qué generar</h2>
+        <div class="checks">
+          <label><input type="checkbox" id="optRegistro" checked /> Registro de usuario</label>
+          <label><input type="checkbox" id="optCompra" checked /> Proceso de compra E2E</label>
+          <label><input type="checkbox" id="optNavegacion" checked /> Navegación por categorías</label>
+          <label><input type="checkbox" id="optFormularios" checked /> Formularios detectados (esqueleto @wip)</label>
+          <label><input type="checkbox" id="optUi" checked /> Código UI (POM)</label>
+          <label><input type="checkbox" id="optApi" checked /> Código API (CRUD)</label>
+        </div>
+        <details>
+          <summary>Datos de prueba de la compra</summary>
+          <div class="grid2" id="testDataForm"></div>
+        </details>
+        <details>
+          <summary>Historia de usuario / requisitos (enriquecer con IA)</summary>
+          <textarea id="requirements" rows="5" placeholder="Como cliente quiero... Criterios de aceptación..."></textarea>
+          <button id="btnEnrich" class="secondary">Proponer casos adicionales con IA</button>
+          <p class="hint">Requiere ANTHROPIC_API_KEY en agent/.env. Es opcional.</p>
+        </details>
+        <button id="btnGenerate" class="primary big">Generar casos y automatización</button>
+      </div>
+
+      <div class="card log">
+        <h2>Actividad</h2>
+        <pre id="log">Listo. Analiza el sitio y/o la API para comenzar.</pre>
+      </div>
+    </section>
+
+    <!-- ================= RESULTADOS ================= -->
+    <section class="column results">
+      <nav class="tabs">
+        <button data-tab="analysis" class="active">Análisis</button>
+        <button data-tab="jira">Casos Jira <span id="countCases" class="count">0</span></button>
+        <button data-tab="code">Código <span id="countFiles" class="count">0</span></button>
+      </nav>
+
+      <div id="tab-analysis" class="tab active">
+        <div id="analysisEmpty" class="empty">Aún no hay análisis.</div>
+        <div id="analysisSite"></div>
+        <div id="analysisApi"></div>
+      </div>
+
+      <div id="tab-jira" class="tab">
+        <div class="toolbar">
+          <button class="secondary" data-export="docs/jira/casos-prueba-xray.csv">CSV Xray</button>
+          <button class="secondary" data-export="docs/jira/casos-prueba-jira.csv">CSV Jira</button>
+          <button class="secondary" data-export="docs/jira/casos-prueba.md">Markdown</button>
+          <button class="secondary" data-export="docs/jira/casos-prueba.json">JSON</button>
+        </div>
+        <div id="casesEmpty" class="empty">Genera para ver los casos de prueba.</div>
+        <div id="cases"></div>
+      </div>
+
+      <div id="tab-code" class="tab">
+        <div class="toolbar">
+          <a id="btnZip" class="primary disabled" href="#">Descargar proyecto (.zip)</a>
+          <span id="outputDir" class="hint"></span>
+        </div>
+        <div class="code-view">
+          <ul id="fileList"></ul>
+          <div class="preview">
+            <div class="preview-head"><span id="previewName">Selecciona un archivo</span><button id="btnCopy" class="ghost">Copiar</button></div>
+            <pre id="preview"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
