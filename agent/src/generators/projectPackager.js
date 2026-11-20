@@ -39,8 +39,8 @@ export async function buildProjectZip({ generatedFiles, extraFiles = {}, env = {
   root.file(
     '.env.example',
     [
-      '# Navegador: chromium | chrome | firefox | webkit',
-      'BROWSER=chromium',
+      '# Navegador: chrome (por defecto) | chromium | firefox | webkit',
+      'BROWSER=chrome',
       'HEADLESS=true',
       `BASE_URL=${env.baseUrl ?? 'https://demowebshop.tricentis.com'}`,
       `API_BASE_URL=${env.apiBaseUrl ?? 'https://webservice.toscacloud.com'}`,

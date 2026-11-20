@@ -6,7 +6,7 @@ export type BrowserName = 'chromium' | 'firefox' | 'webkit';
 
 /** Normaliza el nombre recibido (chrome, chromium, firefox, webkit, safari). */
 function resolveBrowser(raw: string | undefined): { name: BrowserName; channel?: string } {
-  const value = (raw ?? 'chromium').toLowerCase().trim();
+  const value = (raw ?? 'chrome').toLowerCase().trim();
   switch (value) {
     case 'chrome':
       return { name: 'chromium', channel: 'chrome' };
@@ -30,6 +30,8 @@ const browser = resolveBrowser(process.env.BROWSER);
 export const env = {
   browser: browser.name,
   channel: browser.channel,
+  /** Nombre para reportes: chrome, msedge, chromium, firefox, webkit */
+  browserLabel: browser.channel ?? browser.name,
   headless: (process.env.HEADLESS ?? 'true') !== 'false',
   slowMo: Number(process.env.SLOW_MO ?? 0),
   baseUrl: process.env.BASE_URL ?? 'https://demowebshop.tricentis.com',

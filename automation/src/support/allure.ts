@@ -8,7 +8,7 @@ import { env } from '../config/env';
  * el mismo escenario ejecutado en Chromium, Firefox y WebKit.
  */
 Before({ tags: '@ui' }, async function () {
-  await allure.parameter('Navegador', env.browser);
+  await allure.parameter('Navegador', env.browserLabel);
   await allure.label('layer', 'ui');
 });
 

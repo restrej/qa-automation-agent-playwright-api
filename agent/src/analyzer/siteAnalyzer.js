@@ -31,21 +31,16 @@ function scoreLink(link) {
 }
 
 export async function launchBrowser() {
-  const channel = process.env.AGENT_BROWSER_CHANNEL || undefined;
+  // Por defecto Google Chrome; AGENT_BROWSER_CHANNEL=chromium usa el Chromium de Playwright
+  const raw = process.env.AGENT_BROWSER_CHANNEL ?? 'chrome';
+  const channel = !raw || raw === 'chromium' ? undefined : raw;
   try {
     return await chromium.launch({ headless: process.env.AGENT_HEADLESS !== 'false', channel });
   } catch (err) {
-    if (!channel) {
-      // Fallback al Chrome instalado si no se descargaron los navegadores de Playwright
-      try {
-        return await chromium.launch({ headless: process.env.AGENT_HEADLESS !== 'false', channel: 'chrome' });
-      } catch {
-        /* se lanza el error original */
-      }
-    }
     throw new Error(
-      `No se pudo abrir el navegador del analizador. Ejecuta "npx playwright install chromium" en /agent ` +
-        `o define AGENT_BROWSER_CHANNEL=chrome. Detalle: ${err.message}`,
+      `No se pudo abrir el navegador del analizador (${channel ?? 'chromium'}). ` +
+        `Instala Google Chrome con "npx playwright install --with-deps chrome" (pide sudo en Linux) ` +
+        `o usa AGENT_BROWSER_CHANNEL=chromium tras "npx playwright install chromium". Detalle: ${err.message}`,
     );
   }
 }

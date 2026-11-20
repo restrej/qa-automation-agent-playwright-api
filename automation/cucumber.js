@@ -21,7 +21,7 @@ const common = {
     specDirectory: 'features',
     resultsDir: 'allure-results',
     environmentInfo: {
-      Navegador: process.env.BROWSER ?? 'chromium',
+      Navegador: process.env.BROWSER ?? 'chrome',
       BASE_URL: process.env.BASE_URL ?? 'https://demowebshop.tricentis.com',
       API_BASE_URL: process.env.API_BASE_URL ?? 'https://webservice.toscacloud.com',
       Node: process.version,

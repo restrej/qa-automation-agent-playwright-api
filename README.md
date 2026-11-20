@@ -37,13 +37,13 @@ Requisitos: **Node.js 20+**, Git y (solo para el reporte Serenity) **Java 17+**.
 # 1) Agente en localhost
 cd agent
 npm install
-npx playwright install chromium     # o define AGENT_BROWSER_CHANNEL=chrome en agent/.env
+npx playwright install --with-deps chrome   # usa Google Chrome (por defecto)
 npm start                           # abre http://localhost:4000
 
 # 2) Framework de automatización
 cd ../automation
 npm install
-npm run browsers:install            # Chromium, Firefox y WebKit
+npm run browsers:install            # Chrome, Firefox y WebKit
 npm test                            # UI + API
 npm run report:allure:open          # reporte Allure
 ```

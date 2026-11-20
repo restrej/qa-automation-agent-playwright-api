@@ -22,7 +22,7 @@ async function getBrowser(): Promise<Browser> {
 }
 
 BeforeAll(function () {
-  console.log(`\n▶ Navegador: ${env.browser}${env.channel ? ` (${env.channel})` : ''} | headless=${env.headless}`);
+  console.log(`\n▶ Navegador: ${env.browserLabel} | headless=${env.headless}`);
 });
 
 Before({ tags: '@ui' }, async function (this: CustomWorld) {
@@ -53,7 +53,7 @@ After({ tags: '@ui' }, async function (this: CustomWorld, { result, pickle }) {
     if (png) await this.attach(png, 'image/png');
     if (result?.status === Status.FAILED && this.context) {
       const safe = pickle.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-      await this.context.tracing.stop({ path: `test-results/traces/${env.browser}-${safe}.zip` });
+      await this.context.tracing.stop({ path: `test-results/traces/${env.browserLabel}-${safe}.zip` });
     } else {
       await this.context?.tracing.stop();
     }

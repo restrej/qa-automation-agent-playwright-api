@@ -13,11 +13,11 @@ Agente local que **analiza un sitio web y una API REST** y genera:
 cd agent
 cp .env.example .env        # opcional
 npm install
-npx playwright install chromium
+npx playwright install --with-deps chrome   # Google Chrome (en Linux pide sudo)
 npm start
 ```
 
-Abre **http://localhost:4000**. Si prefieres no descargar Chromium, usa el Chrome instalado con `AGENT_BROWSER_CHANNEL=chrome` en `.env`. Para ver el navegador mientras analiza: `AGENT_HEADLESS=false`.
+Abre **http://localhost:4000**. El analizador usa **Google Chrome** por defecto (`AGENT_BROWSER_CHANNEL=chrome`). Si ya tienes Chrome instalado no necesitas el comando de instalación; para usar Chromium de Playwright define `AGENT_BROWSER_CHANNEL=chromium`. Para ver el navegador mientras analiza: `AGENT_HEADLESS=false`.
 
 ## Cómo decide los localizadores
 

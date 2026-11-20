@@ -19,7 +19,7 @@ npm run browsers:install
 npm test                              # todo
 npm run test:ui                       # solo UI
 npm run test:api                      # solo API
-npm run test:chrome | test:firefox | test:webkit
+npm run test:chrome | test:chromium | test:firefox | test:webkit
 
 # Navegador y filtros por variables / tags
 BROWSER=firefox HEADLESS=false npm test -- --tags "@compra"
@@ -27,7 +27,7 @@ BROWSER=firefox HEADLESS=false npm test -- --tags "@compra"
 $env:BROWSER="webkit"; npm run test:ui
 ```
 
-`BROWSER` acepta `chromium`, `chrome` (Chrome instalado), `firefox`, `webkit`. Copia `.env.example` a `.env` para fijar valores.
+`BROWSER` acepta `chrome` (Google Chrome, **por defecto**), `chromium`, `firefox`, `webkit`. Copia `.env.example` a `.env` para fijar valores.
 
 ## Reportes
 

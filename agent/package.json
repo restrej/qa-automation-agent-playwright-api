@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "browsers:install": "playwright install chromium"
+    "browsers:install": "playwright install --with-deps chrome"
   },
   "engines": {
     "node": ">=18"

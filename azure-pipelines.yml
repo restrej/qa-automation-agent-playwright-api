@@ -29,7 +29,7 @@ parameters:
   - name: browsers
     displayName: Navegadores UI
     type: object
-    default: [chromium, firefox, webkit]
+    default: [chrome, firefox, webkit]
 
 variables:
   NODE_VERSION: '20.x'
@@ -147,7 +147,7 @@ stages:
               mkdir -p allure-results
               # Allure: se fusionan todos los resultados (cada archivo tiene UUID único)
               find "$(Pipeline.Workspace)/results" -path '*allure-results/*' -type f -exec cp {} allure-results/ \;
-              # Serenity: un reporte por ejecución (api, ui-chromium, ...)
+              # Serenity: un reporte por ejecución (api, ui-chrome, ...)
               for dir in "$(Pipeline.Workspace)"/results/results-*; do
                 name=$(basename "$dir" | sed 's/^results-//')
                 if [ -d "$dir/serenity" ]; then
